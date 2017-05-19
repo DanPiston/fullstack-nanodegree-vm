@@ -6,6 +6,7 @@ from pprint import pprint
 DBNAME = 'news'
 
 
+# select title, '/article/' || slug as path from articles;  will create a table that you can reference for joining
 def get_top_three():
     """Returns list of paths and visits for top 4
        most visited articles"""
