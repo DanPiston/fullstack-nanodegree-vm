@@ -5,45 +5,27 @@ import psycopg2
 from pprint import pprint
 DBNAME = 'news'
 
+db = psycopg2.connect(database=DBNAME)
 
-# select title, '/article/' || slug as path from articles;  will create a table that you can reference for joining
 def get_top_three():
     """Returns list of paths and visits for top 4
        most visited articles"""
-    db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     query = """
-            select path, count(path) as count
-            from log
-            group by path
-            order by count desc
-            limit 4;
-            """
+           select art_paths.title, count(log.path) as count
+           from art_paths join log
+           on art_paths.path = log.path
+           group by art_paths.title
+           order by count desc
+           limit 3;
+           """
     c.execute(query)
-    top_three_list = c.fetchall()
-    db.close()
-    return top_three_list
+    top_list = c.fetchall()
+    c.close()
+    print('The Top 3 Articles:')
+    for entry in top_list:
+        print('{} --- {} views'.format(entry[0], entry[1]))
 
-
-def top_three_solution(path_list):
-    """Prints out answer to what are the top three most visited articles."""
-    titles = []
-    db = psycopg2.connect(database=DBNAME)
-    c = db.cursor()
-    print("The Top 3 Articles:")
-    for x in path_list:
-        query = """
-                select title
-                from articles
-                where slug
-                like '{}';
-                """.format(x[0][9:])
-        c.execute(query)
-        title = c.fetchone()
-        # Skips over '/' which is the most hit non-article
-        if title:
-            print("{} --- {} views".format(title[0], x[1]))
-            titles.append(title)
 
 # TODO Who are the most popular article authors of all time?
 def get_author_info():
@@ -52,8 +34,7 @@ def get_author_info():
     c = db.cursor()
     query = """
             select articles.slug, authors.name
-            from articles
-            join authors
+            from articles join authors
             on articles.author = authors.id;
             """
     c.execute(query)
@@ -66,5 +47,6 @@ def get_author_info():
 # TODO Which days did more than 1% of requests lead to errors?
 
 
+get_top_three()
 #top_three_solution(get_top_three())
-get_author_info()
+#get_author_info()

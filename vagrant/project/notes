@@ -1,0 +1,10 @@
+1 - created view titled 'art_paths' to connect articles table to log table
+
+create view art_paths as
+select title, '/article/' || slug as path from articles;
+
+2 - created view titled 'author_slug' to associate the authors with their article slugs
+
+select articles.slug, authors.name
+from articles join authors
+on articles.author = authors.id;
