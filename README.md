@@ -2,6 +2,7 @@
 ### Log Anaylsis Project
 
 Work can be found in [/vagrant/project](https://github.com/DanPiston/fullstack-nanodegree-vm/tree/master/vagrant/project).
+
 Views created:
 1 - Art Paths to connect the articles table to the log table:
 ```SQL
