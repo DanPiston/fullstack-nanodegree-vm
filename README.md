@@ -1,7 +1,31 @@
 # My Copy of the FSND VM
-### Log Anaylsis Project
+## Log Anaylsis Project
 
 Work can be found in [/vagrant/project](https://github.com/DanPiston/fullstack-nanodegree-vm/tree/master/vagrant/project).
+
+### To Run Log Report:
+
+1. Assuming you have VirtualBox and Vagrant installed, clone this whole repo.
+2. To run the VM, cd to the directory where you cloned this repo and cd once more to /vagrant and type:
+    ```
+    vagrant up
+    ```
+3. Now that the VM is up and running you can type 
+    ```
+    vagrant ssh
+    ```
+    Which will connect you to the VM
+4. Fire up PSQL by typing 
+    ```
+    psql news
+    ```
+    Once in the database create the Views refenced below to have the reports pull properly.
+5. With the Views created, cd to /vagrant/project and run
+    ```
+    python logdb.py
+    ```
+    This should show the output of the report in your command line.  A file named by the day's date is also created for record keeping.
+
 
 Views created:
 
