@@ -2,14 +2,14 @@
 
 # Database log project for Udacity
 import psycopg2
-from pprint import pprint
+from datetime import date
 DBNAME = 'news'
 
 db = psycopg2.connect(database=DBNAME)
 
+
 def get_top_three():
-    """Returns list of paths and visits for top 4
-       most visited articles"""
+    """Returns top 3 artiles by visits"""
     c = db.cursor()
     query = """
            select art_paths.title, count(log.path) as count
@@ -22,31 +22,60 @@ def get_top_three():
     c.execute(query)
     top_list = c.fetchall()
     c.close()
-    print('The Top 3 Articles:')
+    results = 'The Top 3 Articles:\n'
     for entry in top_list:
-        print('{} --- {} views'.format(entry[0], entry[1]))
+        results += '{} --- {} views\n'.format(entry[0], entry[1])
+    return results
 
 
-# TODO Who are the most popular article authors of all time?
 def get_author_info():
-    """Return article slug and author"""
-    db = psycopg2.connect(database=DBNAME)
+    """Returns list of Authors by popularity"""
     c = db.cursor()
     query = """
-            select articles.slug, authors.name
-            from articles join authors
-            on articles.author = authors.id;
+            select author_path.name, count(author_path.path) as count
+            from author_path join log
+            on author_path.path = log.path
+            group by author_path.name
+            order by count desc;
             """
     c.execute(query)
     author_info = c.fetchall()
-    db.close()
-    for x in author_info:
-        print(x[0])
+    c.close()
+    author_list = '\nThe Most Popular Authors:\n'
+    for author in author_info:
+        author_list += '{} -- {} views\n'.format(author[0], author[1])
+    return author_list
 
 
-# TODO Which days did more than 1% of requests lead to errors?
+def get_bad_days():
+    """Return days when bad request > 1%"""
+    c = db.cursor()
+    query = """
+            select date_trunc('day', time) as day,
+            round((count(case when status != '200 OK'
+            then 1 else null end) * 100)::numeric /count(*), 1) as percent
+            from log
+            group by day
+            order by day desc;
+            """
+    c.execute(query)
+    requests_log = c.fetchall()
+    c.close()
+    bad_days = '\nDays When Errors >= 1%:\n'
+    for day in requests_log:
+        correct_date = date.strftime(day[0], "%b %d, %Y")
+        if day[1] >= 1:
+            bad_days += '{} -- {}% errors\n'.format(correct_date, day[1])
+    return bad_days
 
 
-get_top_three()
-#top_three_solution(get_top_three())
-#get_author_info()
+def write_report():
+    """Writes report"""
+    time = date.today()
+    report_file = open('{}.txt'.format(time), 'w')
+    report_file.write(get_top_three() + get_author_info() + get_bad_days())
+    report_file.close()
+    print(get_top_three() + get_author_info() + get_bad_days())
+
+
+write_report()

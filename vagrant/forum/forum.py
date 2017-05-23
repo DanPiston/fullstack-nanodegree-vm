@@ -5,6 +5,7 @@
 from flask import Flask, request, redirect, url_for
 
 from forumdb import get_posts, add_post
+#does this write to the vm?
 
 app = Flask(__name__)
 
