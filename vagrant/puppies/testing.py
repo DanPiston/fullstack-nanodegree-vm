@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from puppies import Base, Shelter, Puppy
@@ -16,11 +18,16 @@ Using SQLAlchemy perform the following queries on your database:
 4. Query all puppies grouped by the shelter in which they are staying
 '''
 #1. Query all of the puppies and return the results in ascending alphabetical order
-all_puppies = session.query(Puppy).order_by(Puppy.name).all()
-for pup in all_puppies:
-    print(pup.name)
+def all_pups():
+    all_puppies = session.query(Puppy).order_by(Puppy.name).all()
+    for pup in all_puppies:
+        print(pup.name)
 
 #2. Query all of the puppies that are less than 6 months old organized by the youngest first
+young_pups = session.query(Puppy).order_by(desc(Puppy.dateOfBirth)).all()
+six_months = datetime.strftime((datetime.now() - timedelta(days = 180)), "%b")
+print(six_months)
+
 
 #spinach = session.query(MenuItem).filter_by(name = 'Spinach Ice Cream').one()
 #print(spinach.restaurant.name)
