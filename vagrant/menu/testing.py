@@ -7,8 +7,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
-spinach = session.query(MenuItem).filter_by(name = 'Spinach Ice Cream').one()
-print(spinach.restaurant.name)
-session.delete(spinach)
+all_rest = session.query(Restaurant).all()
+for y in all_rest:
+    print(y.name)
+
+just_right = session.query(Restaurant).filter_by(name="Not Really A Test").delete()
 session.commit()
-spinach = session.query(MenuItem).filter_by(name = 'Spinach Ice Cream').one()
